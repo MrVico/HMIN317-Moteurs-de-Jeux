@@ -159,7 +159,8 @@ void GeometryEngine::initPlaneGeometry()
     int nbVertecesInRow=3;
     // (Nb sommets - 1) * (Nb sommets - 1) * 2
     // 15*15*2 triangles
-    VertexData vertices[(sizeof(QVector3D)+sizeof(QVector2D))*nbVertecesInRow*nbVertecesInRow];
+    //VertexData vertices[(sizeof(QVector3D)+sizeof(QVector2D))*nbVertecesInRow*nbVertecesInRow];
+    VertexData* vertices = new VertexData[(sizeof(QVector3D)+sizeof(QVector2D))*nbVertecesInRow*nbVertecesInRow];
     int index=0;
 
     for(int y=0; y<nbVertecesInRow; y++){
@@ -183,7 +184,8 @@ void GeometryEngine::initPlaneGeometry()
 
     index = 0;
     //GLushort indices[] = {0,3,1,4,2,5,5,3,3,6,4,7,5,8};
-    GLushort indices[nbIndexes];
+    //GLushort indices[nbIndexes];
+    GLushort* indices = new GLushort[nbIndexes];
     int i=0, j=0;
     for(int i=0; i<nbVertecesInRow; i++){
         if(i!=0){
