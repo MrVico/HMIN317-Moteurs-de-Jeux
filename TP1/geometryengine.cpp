@@ -53,6 +53,7 @@
 #include <QVector2D>
 #include <QVector3D>
 #include <iostream>
+#include <QImage>
 
 using namespace std;
 
@@ -76,7 +77,9 @@ GeometryEngine::GeometryEngine()
     //initCubeGeometry();
 
     // Initializes plane geometry and transfers it to VBOs
-    initPlaneGeometry();
+    //initPlaneGeometry();
+
+    initHeightMapGeometry();
 }
 
 GeometryEngine::~GeometryEngine()
@@ -186,7 +189,7 @@ void GeometryEngine::drawCubeGeometry(QOpenGLShaderProgram *program)
 
 void GeometryEngine::initPlaneGeometry()
 {
-    unsigned short nbVertecesInRow = 4;
+    unsigned short nbVertecesInRow = 16;
     // (Nb sommets - 1) * (Nb sommets - 1) * 2
     // 15*15*2 triangles
     VertexData* vertices = new VertexData[nbVertecesInRow*nbVertecesInRow];
@@ -194,7 +197,7 @@ void GeometryEngine::initPlaneGeometry()
     int index = 0;
     for(int x=0; x<nbVertecesInRow; x++){
         for(int y=0; y<nbVertecesInRow; y++){
-            vertices[index] = {QVector3D(x/(nbVertecesInRow*1.0f),y/(nbVertecesInRow*1.0f),0), QVector2D(x/((nbVertecesInRow-1)*1.0f),y/((nbVertecesInRow-1)*1.0f))};
+            vertices[index] = {QVector3D((float)x/nbVertecesInRow,(float)y/nbVertecesInRow,(y%2)/10.0f), QVector2D((float)x/(nbVertecesInRow-1),(float)y/(nbVertecesInRow-1))};
             index++;
         }
     }
@@ -243,7 +246,7 @@ void GeometryEngine::initPlaneGeometry()
 
 void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program)
 {
-    unsigned short nbVertecesInRow = 4;
+    unsigned short nbVertecesInRow = 100;
     // Tell OpenGL which VBOs to use
     arrayBuf.bind();
     indexBuf.bind();
@@ -266,4 +269,52 @@ void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program)
 
     // Draw cube geometry using indices from VBO 1
     glDrawElements(GL_TRIANGLE_STRIP, (nbVertecesInRow*2+1)*2 + (nbVertecesInRow*2+2)*(nbVertecesInRow-3), GL_UNSIGNED_SHORT, 0);
+}
+
+void GeometryEngine::initHeightMapGeometry(){
+    QImage img = QImage("../TP1/heightmap-1.png");
+    unsigned short nbVertecesInRow = 100;
+    VertexData* vertices = new VertexData[nbVertecesInRow*nbVertecesInRow];
+
+    int index = 0;
+    for(int x=0; x<nbVertecesInRow; x++){
+        for(int y=0; y<nbVertecesInRow; y++){
+            float z = img.pixelColor(x*img.width()/(float)nbVertecesInRow, y*img.height()/(float)nbVertecesInRow).black()/512.f;
+            vertices[index] = {QVector3D((float)x/nbVertecesInRow,(float)y/nbVertecesInRow,z), QVector2D((float)x/(nbVertecesInRow-1),(float)y/(nbVertecesInRow-1))};
+            index++;
+        }
+    }
+
+    unsigned short nbIndexes = (nbVertecesInRow*2+1)*2+(nbVertecesInRow*2+2)*(nbVertecesInRow-3);
+    index = 0;
+    GLushort* indices = new GLushort[nbIndexes];
+    unsigned short j=0;
+    for(unsigned short i=0; i<nbVertecesInRow-1; i++){
+        // Duplique l'indice en début de ligne, sauf pour la première
+        if(i!=0){
+            indices[index] = i*nbVertecesInRow+j;
+            index++;
+        }
+        for(j=0; j<nbVertecesInRow; j++){
+            indices[index] = i*nbVertecesInRow+j;
+            index++;
+            indices[index] = (i+1)*nbVertecesInRow+j;
+            index++;
+        }
+        // Duplique l'indice en fin de ligne, sauf pour la dernière
+        if(i!=nbVertecesInRow-2){
+            indices[index] = (i+1)*nbVertecesInRow+(j-1);
+            index++;
+            // Réinitialisation nécessaire pour le premier if
+            j=0;
+        }
+    }
+
+    // Transfer vertex data to VBO 0
+    arrayBuf.bind();
+    arrayBuf.allocate(vertices, nbVertecesInRow*nbVertecesInRow * sizeof(VertexData));
+
+    // Transfer index data to VBO 1
+    indexBuf.bind();
+    indexBuf.allocate(indices, nbIndexes * sizeof(GLushort));
 }

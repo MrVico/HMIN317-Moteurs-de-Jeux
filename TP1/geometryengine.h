@@ -67,6 +67,7 @@ public:
 private:
     void initCubeGeometry();
     void initPlaneGeometry();
+    void initHeightMapGeometry();
 
     QOpenGLBuffer arrayBuf;
     QOpenGLBuffer indexBuf;

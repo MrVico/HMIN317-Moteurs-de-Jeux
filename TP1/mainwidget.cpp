@@ -54,11 +54,14 @@
 
 #include <math.h>
 
+#include <iostream>
+
 MainWidget::MainWidget(QWidget *parent) :
     QOpenGLWidget(parent),
     geometries(0),
     texture(0),
-    angularSpeed(0)
+    angularSpeed(0),
+    cam(0,0,-5)
 {
 }
 
@@ -98,6 +101,30 @@ void MainWidget::mouseReleaseEvent(QMouseEvent *e)
     angularSpeed += acc;
 }
 //! [0]
+
+void MainWidget::wheelEvent(QWheelEvent *event){
+    int numDegrees = event->delta() / 8;
+    cam.setZ(cam.z()+numDegrees*0.01f);
+    update();
+}
+
+void MainWidget::keyPressEvent(QKeyEvent *event){
+    switch(event->key()){
+        case Qt::Key_Left :
+            cam.setX(cam.x()-1.0f/10);
+        break;
+        case Qt::Key_Right :
+            cam.setX(cam.x()+1.0f/10);
+        break;
+        case Qt::Key_Up :
+            cam.setY(cam.y()+1.0f/10);
+        break;
+        case Qt::Key_Down :
+            cam.setY(cam.y()-1.0f/10);
+        break;
+    }
+    update();
+}
 
 //! [1]
 void MainWidget::timerEvent(QTimerEvent *)
@@ -170,7 +197,6 @@ void MainWidget::initTextures()
 
     // Set nearest filtering mode for texture minification
     texture->setMinificationFilter(QOpenGLTexture::Nearest);
-
     // Set bilinear filtering mode for texture magnification
     texture->setMagnificationFilter(QOpenGLTexture::Linear);
 
@@ -207,7 +233,9 @@ void MainWidget::paintGL()
 //! [6]
     // Calculate model view transformation
     QMatrix4x4 matrix;
-    matrix.translate(0.0, 0.0, -5.0);
+    //QQuaternion framing = QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -45.0);
+    //matrix.rotate(framing);
+    matrix.translate(cam);
     matrix.rotate(rotation);
 
     // Set modelview-projection matrix
