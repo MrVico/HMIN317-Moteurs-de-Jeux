@@ -186,15 +186,15 @@ void GeometryEngine::drawCubeGeometry(QOpenGLShaderProgram *program)
 
 void GeometryEngine::initPlaneGeometry()
 {
-    unsigned short nbVertecesInRow = 16;
+    unsigned short nbVertecesInRow = 4;
     // (Nb sommets - 1) * (Nb sommets - 1) * 2
     // 15*15*2 triangles
-    VertexData* vertices = new VertexData[(sizeof(QVector3D)+sizeof(QVector2D))*nbVertecesInRow*nbVertecesInRow];
-    int index=0;
+    VertexData* vertices = new VertexData[nbVertecesInRow*nbVertecesInRow];
 
+    int index = 0;
     for(int x=0; x<nbVertecesInRow; x++){
         for(int y=0; y<nbVertecesInRow; y++){
-            vertices[index] = {QVector3D(x,y,0), QVector2D(x/(nbVertecesInRow*1.0f),y/(nbVertecesInRow*1.0f))};
+            vertices[index] = {QVector3D(x/(nbVertecesInRow*1.0f),y/(nbVertecesInRow*1.0f),0), QVector2D(x/((nbVertecesInRow-1)*1.0f),y/((nbVertecesInRow-1)*1.0f))};
             index++;
         }
     }
@@ -243,7 +243,7 @@ void GeometryEngine::initPlaneGeometry()
 
 void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program)
 {
-    unsigned short nbVertecesInRow = 16;
+    unsigned short nbVertecesInRow = 4;
     // Tell OpenGL which VBOs to use
     arrayBuf.bind();
     indexBuf.bind();
