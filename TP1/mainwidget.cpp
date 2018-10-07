@@ -212,8 +212,8 @@ void MainWidget::resizeGL(int w, int h)
     // Calculate aspect ratio
     qreal aspect = qreal(w) / qreal(h ? h : 1);
 
-    // Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
-    const qreal zNear = 3.0, zFar = 7.0, fov = 45.0;
+    // Set near plane to 1.0, far plane to 7.0, field of view 45 degrees
+    const qreal zNear = 1.0, zFar = 7.0, fov = 45.0;
 
     // Reset projection
     projection.setToIdentity();
@@ -233,8 +233,8 @@ void MainWidget::paintGL()
 //! [6]
     // Calculate model view transformation
     QMatrix4x4 matrix;
-    //QQuaternion framing = QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -45.0);
-    //matrix.rotate(framing);
+    matrix.translate(0.0, 0.0, 3.0);
+    // On applique les modifications apportées par l'utilisateur
     matrix.translate(cam);
     matrix.rotate(rotation);
 

@@ -77,9 +77,9 @@ GeometryEngine::GeometryEngine()
     //initCubeGeometry();
 
     // Initializes plane geometry and transfers it to VBOs
-    //initPlaneGeometry();
+    initPlaneGeometry();
 
-    initHeightMapGeometry();
+    //initHeightMapGeometry();
 }
 
 GeometryEngine::~GeometryEngine()
@@ -190,8 +190,6 @@ void GeometryEngine::drawCubeGeometry(QOpenGLShaderProgram *program)
 void GeometryEngine::initPlaneGeometry()
 {
     unsigned short nbVertecesInRow = 16;
-    // (Nb sommets - 1) * (Nb sommets - 1) * 2
-    // 15*15*2 triangles
     VertexData* vertices = new VertexData[nbVertecesInRow*nbVertecesInRow];
 
     int index = 0;
@@ -203,32 +201,24 @@ void GeometryEngine::initPlaneGeometry()
     }
 
     unsigned short nbIndexes = (nbVertecesInRow*2+1)*2+(nbVertecesInRow*2+2)*(nbVertecesInRow-3);
-    //GLushort indices[nbIndexes];
-
     index = 0;
-    //GLushort indices[] = {0,3,1,4,2,5,5,3,3,6,4,7,5,8};
-    //GLushort indices[nbIndexes];
     GLushort* indices = new GLushort[nbIndexes];
     unsigned short j=0;
     for(unsigned short i=0; i<nbVertecesInRow-1; i++){
         // Duplique l'indice en début de ligne, sauf pour la première
         if(i!=0){
             indices[index] = i*nbVertecesInRow+j;
-            std::cout << i*nbVertecesInRow+j /*<< " Index " << index */<< " i: " << i << " j: " << j << " 1st" << endl;
             index++;
         }
         for(j=0; j<nbVertecesInRow; j++){
             indices[index] = i*nbVertecesInRow+j;
-            std::cout << i*nbVertecesInRow+j /*<< " Index " << index */<< " i: " << i << " j: " << j << " 2nd" << endl;
             index++;
             indices[index] = (i+1)*nbVertecesInRow+j;
-            std::cout << (i+1)*nbVertecesInRow+j /*<< " Index " << index */<< " i: " << i << " j: " << j << " 2nd" << endl;
             index++;
         }
         // Duplique l'indice en fin de ligne, sauf pour la dernière
         if(i!=nbVertecesInRow-2){
             indices[index] = (i+1)*nbVertecesInRow+(j-1);
-            std::cout << (i+1)*nbVertecesInRow+(j-1) /*<< " Index " << index */<< " i: " << i << " j: " << j << " 3rd" << endl;
             index++;
             // Réinitialisation nécessaire pour le premier if
             j=0;
@@ -246,7 +236,7 @@ void GeometryEngine::initPlaneGeometry()
 
 void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program)
 {
-    unsigned short nbVertecesInRow = 100;
+    unsigned short nbVertecesInRow = 16;
     // Tell OpenGL which VBOs to use
     arrayBuf.bind();
     indexBuf.bind();
@@ -273,7 +263,7 @@ void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program)
 
 void GeometryEngine::initHeightMapGeometry(){
     QImage img = QImage("../TP1/heightmap-1.png");
-    unsigned short nbVertecesInRow = 100;
+    unsigned short nbVertecesInRow = 16;
     VertexData* vertices = new VertexData[nbVertecesInRow*nbVertecesInRow];
 
     int index = 0;
