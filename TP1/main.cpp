@@ -64,11 +64,22 @@ int main(int argc, char *argv[])
     format.setDepthBufferSize(24);
     QSurfaceFormat::setDefaultFormat(format);
 
-    app.setApplicationName("cube");
+    app.setApplicationName("Terrain");
     app.setApplicationVersion("0.1");
 #ifndef QT_NO_OPENGL
-    MainWidget widget;
-    widget.show();
+    // Paramétrage et affichage des 4 instances
+    MainWidget widget1(1);
+    widget1.setWindowTitle("1 FPS");
+    MainWidget widget2(10);
+    widget2.setWindowTitle("10 FPS");
+    MainWidget widget3(100);
+    widget3.setWindowTitle("100 FPS");
+    MainWidget widget4(1000);
+    widget4.setWindowTitle("1000 FPS");
+    widget1.show();
+    widget2.show();
+    widget3.show();
+    widget4.show();
 #else
     QLabel note("OpenGL Support required");
     note.show();

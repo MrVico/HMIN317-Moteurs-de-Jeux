@@ -60,9 +60,21 @@ MainWidget::MainWidget(QWidget *parent) :
     QOpenGLWidget(parent),
     geometries(0),
     texture(0),
-    angularSpeed(0),
+    angularSpeed(1.0),
     cam(-0.25,-0.5,0),
-    rotationAngle(0)
+    rotationAxis(0,0,1)
+{
+}
+
+// On surchage le constructeur pour pouvoir prendre en paramètre les fps
+MainWidget::MainWidget(int fps, QWidget *parent) :
+    QOpenGLWidget(parent),
+    geometries(0),
+    texture(0),
+    angularSpeed(1.0),
+    cam(-0.25,-0.5,0),
+    rotationAxis(0,0,1),
+    fps(fps)
 {
 }
 
@@ -119,32 +131,23 @@ void MainWidget::keyPressEvent(QKeyEvent *event){
             cam.setX(cam.x()+1.0f/10);
         break;
         case Qt::Key_Up :
-            cam.setY(cam.y()+1.0f/10);
+            //cam.setY(cam.y()+1.0f/10);
+            angularSpeed += 0.05;
         break;
         case Qt::Key_Down :
-            cam.setY(cam.y()-1.0f/10);
+            //.setY(cam.y()-1.0f/10);
+            angularSpeed -= 0.05;
         break;
     }
+    std::cerr << "angular speed : " << angularSpeed << std::endl;
     update();
 }
 
 //! [1]
 void MainWidget::timerEvent(QTimerEvent *)
 {
-    // Decrease angular speed (friction)
-    angularSpeed *= 0.99;
-
-    // Stop rotation when speed goes below threshold
-    if (angularSpeed < 0.01) {
-        angularSpeed = 0.0;
-    } else {
-        // Update rotation
-        rotation = QQuaternion::fromAxisAndAngle(rotationAxis, angularSpeed) * rotation;
-
-        // Request an update
-        update();
-    }
-
+    // On veut une vitesse constante, pas besoin de diminuer la vitesse
+    rotation = QQuaternion::fromAxisAndAngle(rotationAxis, angularSpeed) * rotation;
     update();
 }
 //! [1]
@@ -168,8 +171,9 @@ void MainWidget::initializeGL()
 
     geometries = new GeometryEngine;
 
-    // Use QBasicTimer because its faster than QTimer
-    timer.start(12, this);
+    // Fixe le nombre de fois que l'event timerEvent est appelé
+    // et donc le taux de rafraichissement, en millisecondes
+    timer.start(1000/fps, this);
 }
 
 //! [3]
@@ -243,11 +247,8 @@ void MainWidget::paintGL()
     matrix.rotate(framing);
     // On applique les modifications apportées par l'utilisateur
     matrix.translate(cam);
-    // Rotation avec la souris, vitesse de rotation non constante
-    matrix.rotate(rotation);
     // Rotation à une vitesse constante
-    rotationAngle += 1;
-    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,0,1),rotationAngle));
+    matrix.rotate(rotation);
 
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);

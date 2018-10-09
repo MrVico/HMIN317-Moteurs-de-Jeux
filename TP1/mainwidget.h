@@ -70,6 +70,7 @@ class MainWidget : public QOpenGLWidget, protected QOpenGLFunctions
 
 public:
     explicit MainWidget(QWidget *parent = 0);
+    explicit MainWidget(int fps, QWidget *parent = 0);
     ~MainWidget();
 
 protected:
@@ -102,7 +103,7 @@ private:
 
     QVector3D cam;
 
-    int rotationAngle;
+    int fps;
 };
 
 #endif // MAINWIDGET_H
