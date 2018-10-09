@@ -267,11 +267,12 @@ void GeometryEngine::initHeightMapGeometry(){
     VertexData* vertices = new VertexData[nbVertecesInRow*nbVertecesInRow];
 
     int index = 0;
-    for(int x=-nbVertecesInRow/2; x<nbVertecesInRow/2; x++){
-        for(int y=-nbVertecesInRow/2; y<nbVertecesInRow/2; y++){
-            float z = img.pixelColor((x+nbVertecesInRow/2)*img.width()/(float)nbVertecesInRow,
-                                     (y+nbVertecesInRow/2)*img.height()/(float)nbVertecesInRow).black()/512.f;
-            vertices[index] = {QVector3D((float)x/nbVertecesInRow,(float)y/nbVertecesInRow,z),
+    for(int x=0; x<nbVertecesInRow; x++){
+        for(int y=0; y<nbVertecesInRow; y++){
+            // La composante z du vecteur de position est calculée en fonction du niveau de gris/noir de la heightmap
+            float z = img.pixelColor(x*img.width()/(float)nbVertecesInRow,
+                                     y*img.height()/(float)nbVertecesInRow).black()/512.f;
+            vertices[index] = {QVector3D((float)(x-nbVertecesInRow/2)/nbVertecesInRow,(float)(y-nbVertecesInRow/2)/nbVertecesInRow,z),
                                QVector2D((float)x/(nbVertecesInRow-1),(float)y/(nbVertecesInRow-1))};
             index++;
         }

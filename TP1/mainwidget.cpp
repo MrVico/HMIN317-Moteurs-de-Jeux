@@ -62,7 +62,6 @@ MainWidget::MainWidget(QWidget *parent) :
     texture(0),
     angularSpeed(0),
     cam(-0.25,-0.5,0),
-    rPressed(false),
     rotationAngle(0)
 {
 }
@@ -112,7 +111,6 @@ void MainWidget::wheelEvent(QWheelEvent *event){
 }
 
 void MainWidget::keyPressEvent(QKeyEvent *event){
-    rPressed = false;
     switch(event->key()){
         case Qt::Key_Left :
             cam.setX(cam.x()-1.0f/10);
@@ -125,9 +123,6 @@ void MainWidget::keyPressEvent(QKeyEvent *event){
         break;
         case Qt::Key_Down :
             cam.setY(cam.y()-1.0f/10);
-        break;
-        case Qt::Key_R :
-            rPressed = true;
         break;
     }
     update();
@@ -149,6 +144,8 @@ void MainWidget::timerEvent(QTimerEvent *)
         // Request an update
         update();
     }
+
+    update();
 }
 //! [1]
 
@@ -248,9 +245,9 @@ void MainWidget::paintGL()
     matrix.translate(cam);
     // Rotation avec la souris, vitesse de rotation non constante
     matrix.rotate(rotation);
-    // Rotation avec la touche R du clavier, vitesse de rotation constante
-    if(rPressed)
-        matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,0,1),(rotationAngle=rotationAngle+3)));
+    // Rotation à une vitesse constante
+    rotationAngle += 1;
+    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,0,1),rotationAngle));
 
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);

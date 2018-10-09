@@ -102,7 +102,6 @@ private:
 
     QVector3D cam;
 
-    boolean rPressed;
     int rotationAngle;
 };
 
