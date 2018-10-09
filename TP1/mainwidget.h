@@ -101,6 +101,9 @@ private:
     QQuaternion rotation;
 
     QVector3D cam;
+
+    boolean rPressed;
+    int rotationAngle;
 };
 
 #endif // MAINWIDGET_H
