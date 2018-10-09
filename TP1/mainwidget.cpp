@@ -199,8 +199,8 @@ void MainWidget::initShaders()
 //! [4]
 void MainWidget::initTextures()
 {
-    // Load cube.png image
-    texture = new QOpenGLTexture(QImage(":/cube.png").mirrored());
+    // Load heightmap image
+    texture = new QOpenGLTexture(QImage("../TP1/heightmap-1.png"));
 
     // Set nearest filtering mode for texture minification
     texture->setMinificationFilter(QOpenGLTexture::Nearest);
@@ -250,7 +250,7 @@ void MainWidget::paintGL()
     matrix.rotate(rotation);
     // Rotation avec la touche R du clavier, vitesse de rotation constante
     if(rPressed)
-        matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,0,1),(rotationAngle=rotationAngle+5)));
+        matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,0,1),(rotationAngle=rotationAngle+3)));
 
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);
