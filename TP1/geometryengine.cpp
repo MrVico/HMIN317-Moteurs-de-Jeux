@@ -236,7 +236,7 @@ void GeometryEngine::initPlaneGeometry()
 
 void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program)
 {
-    unsigned short nbVertecesInRow = 16;
+    unsigned short nbVertecesInRow = 8;
     // Tell OpenGL which VBOs to use
     arrayBuf.bind();
     indexBuf.bind();
@@ -263,7 +263,7 @@ void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program)
 
 void GeometryEngine::initHeightMapGeometry(){
     QImage img = QImage("../TP1/heightmap-1.png");
-    unsigned short nbVertecesInRow = 16;
+    unsigned short nbVertecesInRow = 8;
     VertexData* vertices = new VertexData[nbVertecesInRow*nbVertecesInRow];
 
     int index = 0;
