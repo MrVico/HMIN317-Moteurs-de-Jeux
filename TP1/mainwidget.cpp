@@ -67,15 +67,17 @@ MainWidget::MainWidget(QWidget *parent) :
 }
 
 // On surchage le constructeur pour pouvoir prendre en paramètre les fps
-MainWidget::MainWidget(int fps, QWidget *parent) :
+MainWidget::MainWidget(int season, int fps, QWidget *parent) :
     QOpenGLWidget(parent),
     geometries(0),
     texture(0),
     angularSpeed(1.0),
     cam(-0.25,-0.5,0),
     rotationAxis(0,0,1),
-    fps(fps)
+    fps(fps),
+    season(season)
 {
+    updateSeasonColor();
 }
 
 MainWidget::~MainWidget()
@@ -88,6 +90,35 @@ MainWidget::~MainWidget()
     doneCurrent();
 }
 
+void MainWidget::updateSeasonColor(){
+    switch (season) {
+        //Winter
+        case 0:
+            terrainColor = QVector3D(0.75, 0.75, 0.75);
+            break;
+        //Spring
+        case 1:
+            terrainColor = QVector3D(0.25, 1, 0.0);
+            break;
+        //Summer
+        case 2:
+            terrainColor = QVector3D(1.0, 0.9, 0.0);
+            break;
+        //Fall
+        default:
+            terrainColor = QVector3D(1.0, 0.5, 0.0);
+            break;
+    }
+    program.setUniformValue("texture", 0);
+}
+
+void MainWidget::changeSeason(){
+    season = (season+1)%4;
+    std::cout << "Season " << season << std::endl;
+    updateSeasonColor();
+    geometries->updateTerrainColor(terrainColor);
+}
+
 //! [0]
 void MainWidget::mousePressEvent(QMouseEvent *e)
 {
@@ -97,7 +128,7 @@ void MainWidget::mousePressEvent(QMouseEvent *e)
 
 void MainWidget::mouseReleaseEvent(QMouseEvent *e)
 {
-    // Mouse release position - mouse press position
+    // Mouse release position - mouse press position, QWidget *parent = 0
     QVector2D diff = QVector2D(e->localPos()) - mousePressPosition;
 
     // Rotation axis is perpendicular to the mouse position difference
@@ -169,7 +200,7 @@ void MainWidget::initializeGL()
     glEnable(GL_CULL_FACE);
 //! [2]
 
-    geometries = new GeometryEngine;
+    geometries = new GeometryEngine(terrainColor);
 
     // Fixe le nombre de fois que l'event timerEvent est appelé
     // et donc le taux de rafraichissement, en millisecondes

@@ -58,19 +58,23 @@
 class GeometryEngine : protected QOpenGLFunctions
 {
 public:
-    GeometryEngine();
+    GeometryEngine(QVector3D terrainColor);
     virtual ~GeometryEngine();
 
     void drawCubeGeometry(QOpenGLShaderProgram *program);
     void drawPlaneGeometry(QOpenGLShaderProgram *program);
 
+    void updateTerrainColor(QVector3D color);
+
 private:
     void initCubeGeometry();
     void initPlaneGeometry();
-    void initHeightMapGeometry();
+    void initHeightMapGeometry(QVector3D terrainColor);
 
     QOpenGLBuffer arrayBuf;
     QOpenGLBuffer indexBuf;
+
+    QVector3D terrainColor;
 };
 
 #endif // GEOMETRYENGINE_H

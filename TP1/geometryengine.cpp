@@ -61,10 +61,11 @@ struct VertexData
 {
     QVector3D position;
     QVector2D texCoord;
+    QVector3D color;
 };
 
 //! [0]
-GeometryEngine::GeometryEngine()
+GeometryEngine::GeometryEngine(QVector3D terrainColor)
     : indexBuf(QOpenGLBuffer::IndexBuffer)
 {
     initializeOpenGLFunctions();
@@ -79,7 +80,8 @@ GeometryEngine::GeometryEngine()
     // Initializes plane geometry and transfers it to VBOs
     initPlaneGeometry();
 
-    initHeightMapGeometry();
+    // Initializes the height map geometry with the given color
+    initHeightMapGeometry(terrainColor);
 }
 
 GeometryEngine::~GeometryEngine()
@@ -88,6 +90,12 @@ GeometryEngine::~GeometryEngine()
     indexBuf.destroy();
 }
 //! [0]
+
+void GeometryEngine::updateTerrainColor(QVector3D color)
+{
+    terrainColor = color;
+    initHeightMapGeometry(terrainColor);
+}
 
 void GeometryEngine::initCubeGeometry()
 {
@@ -236,7 +244,7 @@ void GeometryEngine::initPlaneGeometry()
 
 void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program)
 {
-    unsigned short nbVertecesInRow = 8;
+    unsigned short nbVertecesInRow = 16;
     // Tell OpenGL which VBOs to use
     arrayBuf.bind();
     indexBuf.bind();
@@ -257,13 +265,20 @@ void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program)
     program->enableAttributeArray(texcoordLocation);
     program->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
 
+    // Offset for color coordinate
+    offset += sizeof(QVector2D);
+
+    int colorAttribute = program->attributeLocation("a_color");
+    program->enableAttributeArray(colorAttribute);
+    program->setAttributeBuffer(colorAttribute, GL_FLOAT, offset, 3, sizeof(VertexData));
+
     // Draw cube geometry using indices from VBO 1
     glDrawElements(GL_TRIANGLE_STRIP, (nbVertecesInRow*2+1)*2 + (nbVertecesInRow*2+2)*(nbVertecesInRow-3), GL_UNSIGNED_SHORT, 0);
 }
 
-void GeometryEngine::initHeightMapGeometry(){
+void GeometryEngine::initHeightMapGeometry(QVector3D terrainColor){
     QImage img = QImage("../TP1/heightmap-1.png");
-    unsigned short nbVertecesInRow = 8;
+    unsigned short nbVertecesInRow = 16;
     VertexData* vertices = new VertexData[nbVertecesInRow*nbVertecesInRow];
 
     int index = 0;
@@ -273,7 +288,8 @@ void GeometryEngine::initHeightMapGeometry(){
             float z = img.pixelColor(x*img.width()/(float)nbVertecesInRow,
                                      y*img.height()/(float)nbVertecesInRow).black()/512.f;
             vertices[index] = {QVector3D((float)(x-nbVertecesInRow/2)/nbVertecesInRow,(float)(y-nbVertecesInRow/2)/nbVertecesInRow,z),
-                               QVector2D((float)x/(nbVertecesInRow-1),(float)y/(nbVertecesInRow-1))};
+                               QVector2D((float)x/(nbVertecesInRow-1),(float)y/(nbVertecesInRow-1)),
+                               terrainColor};
             index++;
         }
     }

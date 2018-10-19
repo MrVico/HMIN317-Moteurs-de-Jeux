@@ -54,6 +54,7 @@
 
 #ifndef QT_NO_OPENGL
 #include "mainwidget.h"
+#include "seasontimer.h"
 #endif
 
 int main(int argc, char *argv[])
@@ -67,22 +68,33 @@ int main(int argc, char *argv[])
     app.setApplicationName("Terrain");
     app.setApplicationVersion("0.1");
 #ifndef QT_NO_OPENGL
-    // Paramétrage et affichage des 4 instances
-    MainWidget widget1(1);
-    widget1.setWindowTitle("1 FPS");
-    MainWidget widget2(10);
-    widget2.setWindowTitle("10 FPS");
-    MainWidget widget3(100);
-    widget3.setWindowTitle("100 FPS");
-    MainWidget widget4(1000);
-    widget4.setWindowTitle("1000 FPS");
+
+    SeasonTimer seasonTimer(1000);
+    seasonTimer.startTimer();
+
+    // Paramétrage et affichage des 4 instances avec saisons et fps
+    MainWidget widget1(0, 1);
+    widget1.setWindowTitle("Winter");
+    MainWidget widget2(1, 10);
+    widget2.setWindowTitle("Spring");
+    MainWidget widget3(2, 100);
+    widget3.setWindowTitle("Summer");
+    MainWidget widget4(3, 1000);
+    widget4.setWindowTitle("Fall");
     widget1.show();
     widget2.show();
     widget3.show();
     widget4.show();
+
+    QObject::connect(&seasonTimer, &SeasonTimer::seasonChange, &widget1, &MainWidget::changeSeason);
+    QObject::connect(&seasonTimer, &SeasonTimer::seasonChange, &widget2, &MainWidget::changeSeason);
+    QObject::connect(&seasonTimer, &SeasonTimer::seasonChange, &widget3, &MainWidget::changeSeason);
+    QObject::connect(&seasonTimer, &SeasonTimer::seasonChange, &widget4, &MainWidget::changeSeason);
+
 #else
     QLabel note("OpenGL Support required");
     note.show();
 #endif
     return app.exec();
 }
+

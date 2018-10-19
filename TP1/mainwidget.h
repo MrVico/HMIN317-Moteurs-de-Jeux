@@ -70,8 +70,11 @@ class MainWidget : public QOpenGLWidget, protected QOpenGLFunctions
 
 public:
     explicit MainWidget(QWidget *parent = 0);
-    explicit MainWidget(int fps, QWidget *parent = 0);
+    explicit MainWidget(int season, int fps, QWidget *parent = 0);
     ~MainWidget();
+
+public slots:
+    void changeSeason();
 
 protected:
     void mousePressEvent(QMouseEvent *e) override;
@@ -86,6 +89,8 @@ protected:
 
     void initShaders();
     void initTextures();
+
+    void updateSeasonColor();
 
 private:
     QBasicTimer timer;
@@ -102,8 +107,11 @@ private:
     QQuaternion rotation;
 
     QVector3D cam;
-
     int fps;
+
+    // 0 winter | 1 spring | 2 summer | 3 fall
+    int season;
+    QVector3D terrainColor;
 };
 
 #endif // MAINWIDGET_H
