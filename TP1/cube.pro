@@ -4,8 +4,7 @@ TARGET = cube
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    seasontimer.cpp \
-    quadtree.cpp
+    seasontimer.cpp
 
 SOURCES += \
     mainwidget.cpp \
@@ -14,8 +13,7 @@ SOURCES += \
 HEADERS += \
     mainwidget.h \
     geometryengine.h \
-    seasontimer.h \
-    quadtree.h
+    seasontimer.h
 
 RESOURCES += \
     shaders.qrc \

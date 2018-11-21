@@ -280,7 +280,6 @@ void GeometryEngine::initHeightMapGeometry(QVector3D terrainColor){
     QImage img = QImage("../TP1/heightmap-1.png");
     unsigned short nbVertecesInRow = 16;
     VertexData* vertices = new VertexData[nbVertecesInRow*nbVertecesInRow];
-    std::vector<QVector2D> vertices2D;
 
     int index = 0;
     for(int x=0; x<nbVertecesInRow; x++){
@@ -291,13 +290,9 @@ void GeometryEngine::initHeightMapGeometry(QVector3D terrainColor){
             vertices[index] = {QVector3D((float)(x-nbVertecesInRow/2)/nbVertecesInRow,(float)(y-nbVertecesInRow/2)/nbVertecesInRow,z),
                                QVector2D((float)x/(nbVertecesInRow-1),(float)y/(nbVertecesInRow-1)),
                                terrainColor};
-            vertices2D.push_back(new QVector2D(vertices[0], vertices[1]));
             index++;
         }
     }
-
-    // DOESN'T RECOGNISE THE CLASS...
-    //Quadtree quadTree(new QVector2D(-2, -2), new QVector2D(2, 2));
 
     unsigned short nbIndexes = (nbVertecesInRow*2+1)*2+(nbVertecesInRow*2+2)*(nbVertecesInRow-3);
     index = 0;

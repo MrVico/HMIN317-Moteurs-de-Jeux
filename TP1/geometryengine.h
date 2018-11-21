@@ -54,7 +54,6 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
-#include "quadtree.h"
 
 class GeometryEngine : protected QOpenGLFunctions
 {
